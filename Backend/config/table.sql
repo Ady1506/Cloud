@@ -21,10 +21,20 @@ CREATE TABLE subgroups (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Create 'students' table
+-- CREATE TABLE students (
+--     student_id INT AUTO_INCREMENT PRIMARY KEY,
+--     student_name VARCHAR(255) NOT NULL,
+--     roll_number INT NOT NULL UNIQUE,
+--     subgroup_id INT,
+--     FOREIGN KEY (subgroup_id) REFERENCES subgroups(subgroup_id) ON DELETE SET NULL
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- Create 'students' table with email and password fields
 CREATE TABLE students (
     student_id INT AUTO_INCREMENT PRIMARY KEY,
     student_name VARCHAR(255) NOT NULL,
     roll_number INT NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     subgroup_id INT,
     FOREIGN KEY (subgroup_id) REFERENCES subgroups(subgroup_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -1,26 +1,25 @@
 import { Router } from 'express';
-import { addStudent, studentLogin, getStudentDetails, markAttendance } from '../controllers/userController.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import {
+    addStudent,
+    studentLogin,
+    getStudentDetails,
+    markAttendance,
+} from '../controllers/userController.js';
+import verify from '../verify/verify.js';
 
 const router = Router();
 
 // Route for student sign-up
-router.route('/sign-up').post(
-    addStudent
-);
+router.post('/sign-up', asyncHandler(addStudent));
 
 // Route for student login
-router.route('/sign-in').post(
-    studentLogin
-);
+router.post('/sign-in', asyncHandler(studentLogin));
 
 // Route to fetch student's subjects, teachers, subgroups, and attendance details
-router.route('/:studentId/details').get(
-    getStudentDetails
-);
+router.get('/students/details',verify, asyncHandler(getStudentDetails));
 
 // Route to mark attendance for a student
-router.route('/mark-attendance').post(
-    markAttendance
-);
+router.post('/mark-attendance', asyncHandler(markAttendance));
 
 export default router;
