@@ -15,7 +15,17 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+// app.use(cors());
+// CORS setup
+const frontendOrigin = process.env.NODE_ENV === 'production' ? 'https://your-production-frontend-url.com' : 'http://localhost:5173';
+
+app.use(
+  cors({
+    origin: frontendOrigin, // Dynamically set the origin based on environment
+    credentials: true, // Allow credentials (cookies) to be included in requests
+  })
+);
+
 app.use(cookieParser());  // Use cookie-parser middleware to handle cookies
 
 // Routes

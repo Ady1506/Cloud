@@ -128,10 +128,10 @@ const getTeacherDetails = asyncHandler(async (req, res) => {
             SELECT t.teacher_id, t.teacher_name, t.email, 
                    s.subject_code, s.subject_name, sg.subgroup_id, sg.branch_id, sg.year_id
             FROM teacher_subjects ts
-            JOIN Subjects s ON ts.subject_code = s.subject_code
-            LEFT JOIN Teacher_subgroups tsg ON ts.teacher_id = tsg.teacher_id AND ts.subject_code = tsg.subject_code
-            LEFT JOIN Subgroups sg ON tsg.subgroup_id = sg.subgroup_id
-            LEFT JOIN Teachers t ON ts.teacher_id = t.teacher_id
+            JOIN subjects s ON ts.subject_code = s.subject_code
+            LEFT JOIN teacher_subgroups tsg ON ts.teacher_id = tsg.teacher_id AND ts.subject_code = tsg.subject_code
+            LEFT JOIN subgroups sg ON tsg.subgroup_id = sg.subgroup_id
+            LEFT JOIN teachers t ON ts.teacher_id = t.teacher_id
             WHERE ts.teacher_id = ?`;
 
         const [data] = await connection.query(query, [teacherId]);
@@ -212,12 +212,14 @@ const teacherLogin = asyncHandler(async (req, res) => {
 
         // Generate and send token
         generateToken(res, teacher_id);
+        const token=generateToken(res, teacher_id);
 
         res.status(200).json(new ApiResponse(200, 'Login successful', {
             id: teacher_id,
             name: teacher_name,
             email: email,
             type: 'teacher',
+            token:token
         }));
 
         connection.end(); // Close the connection
@@ -372,6 +374,49 @@ const markAttendance = asyncHandler(async (req, res) => {
 
 
 
+// const getAttendanceDetails = asyncHandler(async (req, res) => {
+//     const teacherId = req.user; // Extracted from `verify` middleware
+//     const { subjectCode, subgroupId, date: providedDate } = req.params;
+
+//     let connection;
+
+//     try {
+//         // Connect to the database
+//         connection = await connectToDatabase();
+
+//         // Validate that the teacher is assigned to the subject and subgroup
+//         const validateQuery = `
+//             SELECT * FROM teacher_subgroups 
+//             WHERE teacher_id = ? AND subject_code = ? AND subgroup_id = ?`;
+//         const [validationResult] = await connection.query(validateQuery, [teacherId, subjectCode, subgroupId]);
+
+//         if (validationResult.length === 0) {
+//             return res.status(403).json(new ApiResponse(403, 'Teacher is not assigned to this subject and subgroup'));
+//         }
+
+//         // Use provided date or default to today's date
+//         const date = new Date(providedDate) || new Date().toISOString().split('T')[0];
+
+//         // Fetch attendance and student details for the given subject, subgroup, and date
+//         const attendanceQuery = `
+//             SELECT a.date, a.status, st.student_id, st.student_name, st.email AS student_email
+//             FROM attendance a
+//             JOIN students st ON a.student_id = st.student_id
+//             WHERE a.subject_code = ? AND a.date = ? AND st.subgroup_id = ?`;
+//         const [attendanceData] = await connection.query(attendanceQuery, [subjectCode, date, subgroupId]);
+
+//         res.status(200).json(new ApiResponse(200, 'Attendance and student details fetched successfully', attendanceData));
+
+//     } catch (err) {
+//         console.error('Error fetching attendance details:', err);
+//         res.status(500).json(new ApiResponse(500, 'Internal server error'));
+//     } finally {
+//         if (connection) {
+//             connection.end(); // Always close the connection after use
+//         }
+//     }
+// });
+
 const getAttendanceDetails = asyncHandler(async (req, res) => {
     const teacherId = req.user; // Extracted from `verify` middleware
     const { subjectCode, subgroupId, date: providedDate } = req.params;
@@ -393,7 +438,17 @@ const getAttendanceDetails = asyncHandler(async (req, res) => {
         }
 
         // Use provided date or default to today's date
-        const date = providedDate || new Date().toISOString().split('T')[0];
+        const date = new Date(providedDate) || new Date().toISOString().split('T')[0];
+
+        // Adjust the date to IST (UTC + 5:30)
+        const dateInIST = new Date(date);
+        dateInIST.setHours(dateInIST.getHours() + 5); // Add 5 hours for IST
+        dateInIST.setMinutes(dateInIST.getMinutes() + 30); // Add 30 minutes for IST
+
+        // Format the date to YYYY-MM-DD (MySQL expected format)
+        const formattedDate = dateInIST.toISOString().split('T')[0];  // Get the date part in YYYY-MM-DD format
+
+        console.log(formattedDate); // For debugging purposes
 
         // Fetch attendance and student details for the given subject, subgroup, and date
         const attendanceQuery = `
@@ -401,9 +456,21 @@ const getAttendanceDetails = asyncHandler(async (req, res) => {
             FROM attendance a
             JOIN students st ON a.student_id = st.student_id
             WHERE a.subject_code = ? AND a.date = ? AND st.subgroup_id = ?`;
-        const [attendanceData] = await connection.query(attendanceQuery, [subjectCode, date, subgroupId]);
+        const [attendanceData] = await connection.query(attendanceQuery, [subjectCode, formattedDate, subgroupId]);
 
-        res.status(200).json(new ApiResponse(200, 'Attendance and student details fetched successfully', attendanceData));
+        // Adjust the date for each record to IST
+        const updatedAttendanceData = attendanceData.map((record) => {
+            const dateInUTC = new Date(record.date); // Assuming `record.date` is in UTC
+            dateInUTC.setHours(dateInUTC.getHours() + 5); // Add 5 hours for IST
+            dateInUTC.setMinutes(dateInUTC.getMinutes() + 30); // Add 30 minutes for IST
+            const formattedRecordDate = dateInUTC.toLocaleDateString('en-IN');  // Format the date to DD/MM/YYYY
+            return {
+                ...record,
+                date: formattedRecordDate,  // Replace the date with the formatted IST date
+            };
+        });
+
+        res.status(200).json(new ApiResponse(200, 'Attendance and student details fetched successfully', updatedAttendanceData));
 
     } catch (err) {
         console.error('Error fetching attendance details:', err);
@@ -414,6 +481,7 @@ const getAttendanceDetails = asyncHandler(async (req, res) => {
         }
     }
 });
+
 
 
 

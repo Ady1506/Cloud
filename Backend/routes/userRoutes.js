@@ -17,9 +17,11 @@ router.post('/sign-up', asyncHandler(addStudent));
 router.post('/sign-in', asyncHandler(studentLogin));
 
 // Route to fetch student's subjects, teachers, subgroups, and attendance details
-router.get('/students/details',verify, asyncHandler(getStudentDetails));
+router.get('/details',verify, asyncHandler(getStudentDetails));
 
+// Route to fetch subjects specifically for the logged-in student
+// router.get('/subjects', verify, asyncHandler(getSubjectsForStudent));
 // Route to mark attendance for a student
-router.post('/mark-attendance', asyncHandler(markAttendance));
+router.post('/mark-attendance',verify, asyncHandler(markAttendance));
 
 export default router;
