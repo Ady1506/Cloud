@@ -15,7 +15,7 @@ const ReportPage = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:3000/api/users/details', {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/details`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -280,7 +280,7 @@ const LoginPage = () => {
     setError(''); // Clear any previous error
 
     try {
-      const response = await axios.post('http://localhost:3000/api/users/sign-in', {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/users/sign-in`, {
         roll_number: rollNumber,
         password: password,
       }, {

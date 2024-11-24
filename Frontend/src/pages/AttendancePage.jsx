@@ -16,7 +16,7 @@ const MarkAttendancePage = () => {
   // Fetch subjects and attendance for the logged-in student
   const fetchSubjects = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/users/details', {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/details`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

@@ -26,7 +26,7 @@ const SignUp = () => {
     e.preventDefault();
     try {
       // Make the sign-up API call
-      const response = await axios.post('http://localhost:3000/api/users/sign-up', formData);
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/users/sign-up`, formData);
 
       if (response.status === 201) {
         // Redirect to login or home page after successful sign-up
