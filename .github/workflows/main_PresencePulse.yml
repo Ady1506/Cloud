@@ -31,7 +31,8 @@ jobs:
       with:
         push: true
         tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_7cedc369f3894d88ac7f1834a8cf8afe }}/ady1506/attendancetracker-backend:${{ github.sha }}
-        file: ./Dockerfile
+        context: .  # Root directory for the build context
+        file: ./backend/Dockerfile  # Path to your backend Dockerfile inside the 'backend' folder
 
   deploy:
     runs-on: ubuntu-latest
