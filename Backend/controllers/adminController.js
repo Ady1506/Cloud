@@ -245,12 +245,12 @@ const updateTeacherSubgroups = asyncHandler(async (req, res) => {
         connection = await connectToDatabase();
 
         // First, delete existing subgroups for the teacher and subject
-        const deleteQuery = 'DELETE FROM Teacher_subgroups WHERE teacher_id = ? AND subject_code = ?';
+        const deleteQuery = 'DELETE FROM teacher_subgroups WHERE teacher_id = ? AND subject_code = ?';
         await connection.query(deleteQuery, [teacherId, subjectCode]);
 
         // Insert new subgroups
         for (const subgroupId of subgroups) {
-            const insertSubgroupQuery = 'INSERT INTO Teacher_subgroups (teacher_id, subject_code, subgroup_id) VALUES (?, ?, ?)';
+            const insertSubgroupQuery = 'INSERT INTO teacher_subgroups (teacher_id, subject_code, subgroup_id) VALUES (?, ?, ?)';
             await connection.query(insertSubgroupQuery, [teacherId, subjectCode, subgroupId]);
         }
 
