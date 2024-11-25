@@ -31,7 +31,7 @@ jobs:
       with:
         push: true
         tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_ad375002bd4b4735b7d1cdf13ae5f204 }}/ady1506/attendancetracker-frontend:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./Frontend/dockerfile
 
   deploy:
     runs-on: ubuntu-latest
