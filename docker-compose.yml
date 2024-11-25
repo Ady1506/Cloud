@@ -8,7 +8,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      FRONTEND_URL: http://localhost:5173
+      FRONTEND_URL: https://presensepulse-btbwfcgshneeftes.centralindia-01.azurewebsites.net/
       JWT_SECRET: c009f72781d65f4a9fcdaee7c9e721d08ff7c6caea02bf5019db21cea90098a1c274b337a53573e4ec5905227e19e2236af4ae7a83ea47530e3e6deb1f42cf32
       DB_HOST: attendancetracker.cluster-cp04ak2iyggj.eu-north-1.rds.amazonaws.com
       DB_USER: root
@@ -27,7 +27,7 @@ services:
     ports:
       - "5173:80"  # Exposing port 80 from the container to port 5173 on host
     environment:
-      VITE_API_BASE_URL: http://localhost:3000  # Backend URL adjusted to 3001
+      VITE_API_BASE_URL: https://presencepulse-c3a0e8arakhnecax.centralindia-01.azurewebsites.net/ # Backend URL adjusted to 3001
     networks:
       - app-network
 
