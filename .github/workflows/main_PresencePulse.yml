@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_40398c36826e4ed3935df544b23d3000 }}/ady1506/attendancetracker-backend:${{ github.sha }}
+        tags: ${{ secrets.AzureAppService_ContainerUsername_40398c36826e4ed3935df544b23d3000 }}/ady1506/attendancetracker-backend:${{ github.sha }}
         file: ./Backend/dockerfile
 
   deploy:
